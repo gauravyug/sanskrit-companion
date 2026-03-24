@@ -149,7 +149,10 @@ export default function ExplanationPanel({
                 {explanation.followUp.map((q, i) => (
                   <button
                     key={i}
-                    onClick={() => fetchExplanation(q)}
+                    onClick={() => {
+                      setQuestion(q);
+                      fetchExplanation(q);
+                    }}
                     className="text-left px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-sm transition-colors border border-blue-100"
                   >
                     💬 {q}
