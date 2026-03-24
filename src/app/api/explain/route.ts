@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getVerseById } from "@/lib/search";
 import { getAIExplanation } from "@/lib/ai";
-import type { Language } from "@/types";
+import type { Language, AIProvider } from "@/types";
+
+const validProviders = new Set<AIProvider>(["gemini", "groq", "openai"]);
 
 export async function POST(request: NextRequest) {
   let body: Record<string, unknown>;
@@ -11,11 +13,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const { verseId, mode, language, question } = body as {
+  const { verseId, mode, language, question, provider } = body as {
     verseId?: string;
     mode?: string;
     language?: string;
     question?: string;
+    provider?: string;
   };
 
   if (!verseId || typeof verseId !== "string") {
@@ -36,7 +39,10 @@ export async function POST(request: NextRequest) {
     question && typeof question === "string"
       ? question.slice(0, 500)
       : undefined;
+  const safeProvider = provider && validProviders.has(provider as AIProvider)
+    ? (provider as AIProvider)
+    : undefined;
 
-  const result = await getAIExplanation(verse, safeMode, safeLang, safeQuestion);
+  const result = await getAIExplanation(verse, safeMode, safeLang, safeQuestion, safeProvider);
   return NextResponse.json(result);
 }

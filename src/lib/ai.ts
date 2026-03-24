@@ -1,6 +1,90 @@
-import type { Verse, Language, ExplanationResponse } from "@/types";
+import type { Verse, Language, ExplanationResponse, AIProvider } from "@/types";
 
-function buildPrompt(
+// ── Provider config ───────────────────────────────────────────────────
+interface ProviderConfig {
+  name: string;
+  apiUrl: string;
+  model: string;
+  getHeaders: (key: string) => Record<string, string>;
+  buildBody: (prompt: string) => Record<string, unknown>;
+  extractContent: (data: Record<string, unknown>) => string;
+}
+
+const providers: Record<AIProvider, ProviderConfig> = {
+  gemini: {
+    name: "Google Gemini",
+    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+    model: "gemini-2.0-flash",
+    getHeaders: () => ({ "Content-Type": "application/json" }),
+    buildBody: (prompt: string) => ({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { temperature: 0.7, maxOutputTokens: 800 },
+    }),
+    extractContent: (data) => {
+      const candidates = data.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined;
+      return candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    },
+  },
+  groq: {
+    name: "Groq",
+    apiUrl: "https://api.groq.com/openai/v1/chat/completions",
+    model: "llama-3.1-70b-versatile",
+    getHeaders: (key: string) => ({
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    }),
+    buildBody: (prompt: string) => ({
+      model: "llama-3.1-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+      max_tokens: 800,
+    }),
+    extractContent: (data) => {
+      const choices = data.choices as Array<{ message?: { content?: string } }> | undefined;
+      return choices?.[0]?.message?.content ?? "";
+    },
+  },
+  openai: {
+    name: "OpenAI",
+    apiUrl: "https://api.openai.com/v1/chat/completions",
+    model: "gpt-4o-mini",
+    getHeaders: (key: string) => ({
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    }),
+    buildBody: (prompt: string) => ({
+      model: "gpt-4o-mini",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+      max_tokens: 800,
+    }),
+    extractContent: (data) => {
+      const choices = data.choices as Array<{ message?: { content?: string } }> | undefined;
+      return choices?.[0]?.message?.content ?? "";
+    },
+  },
+};
+
+// ── Resolve which provider to use ─────────────────────────────────────
+function getAvailableProvider(preferred?: AIProvider): { provider: ProviderConfig; key: string } | null {
+  const order: AIProvider[] = preferred
+    ? [preferred, "gemini", "groq", "openai"]
+    : ["gemini", "groq", "openai"];
+
+  const keyMap: Record<AIProvider, string | undefined> = {
+    gemini: process.env.GEMINI_API_KEY,
+    groq: process.env.GROQ_API_KEY,
+    openai: process.env.OPENAI_API_KEY,
+  };
+
+  for (const id of order) {
+    const key = keyMap[id];
+    if (key) return { provider: providers[id], key };
+  }
+  return null;
+}
+
+// ── Prompt builder ────────────────────────────────────────────────────
   verse: Verse,
   mode: "standard" | "eli10",
   language: Language,
@@ -55,39 +139,37 @@ export async function getAIExplanation(
   verse: Verse,
   mode: "standard" | "eli10",
   language: Language,
-  question?: string
+  question?: string,
+  preferredProvider?: AIProvider,
 ): Promise<ExplanationResponse> {
-  const apiKey = process.env.OPENAI_API_KEY;
+  const resolved = getAvailableProvider(preferredProvider);
 
-  if (!apiKey) {
-    // Fallback: return curated explanation from the data itself
+  if (!resolved) {
     return getFallbackExplanation(verse, mode, language);
   }
 
+  const { provider, key } = resolved;
   const prompt = buildPrompt(verse, mode, language, question);
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Gemini uses API key as query param
+    const url = provider === providers.gemini
+      ? `${provider.apiUrl}?key=${key}`
+      : provider.apiUrl;
+
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.7,
-        max_tokens: 800,
-      }),
+      headers: provider.getHeaders(key),
+      body: JSON.stringify(provider.buildBody(prompt)),
     });
 
     if (!response.ok) {
-      console.error("OpenAI API error:", response.status);
+      console.error(`${provider.name} API error:`, response.status);
       return getFallbackExplanation(verse, mode, language);
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content ?? "";
+    const content = provider.extractContent(data);
 
     // Try to parse JSON from the response
     const jsonMatch = content.match(/\{[\s\S]*\}/);

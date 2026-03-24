@@ -37,6 +37,8 @@ export interface Scripture {
 
 export type Language = "en" | "hi";
 
+export type AIProvider = "gemini" | "groq" | "openai";
+
 export interface ExplanationRequest {
   verseId: string;
   mode: "standard" | "eli10";

@@ -1,18 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import type { Language, ExplanationResponse } from "@/types";
+import type { Language, ExplanationResponse, AIProvider } from "@/types";
 
 interface ExplanationPanelProps {
   verseId: string;
   language: Language;
 }
 
+const AI_MODELS: { id: AIProvider; label: string; labelHi: string; icon: string }[] = [
+  { id: "gemini", label: "Gemini Flash", labelHi: "Gemini Flash", icon: "✦" },
+  { id: "groq", label: "Llama 3.1 (Groq)", labelHi: "Llama 3.1 (Groq)", icon: "🦙" },
+  { id: "openai", label: "GPT-4o Mini", labelHi: "GPT-4o Mini", icon: "🤖" },
+];
+
 export default function ExplanationPanel({
   verseId,
   language,
 }: ExplanationPanelProps) {
   const [mode, setMode] = useState<"standard" | "eli10">("standard");
+  const [provider, setProvider] = useState<AIProvider>("gemini");
   const [explanation, setExplanation] = useState<ExplanationResponse | null>(
     null
   );
@@ -30,6 +37,7 @@ export default function ExplanationPanel({
           mode,
           language,
           question: customQuestion,
+          provider,
         }),
       });
       const data = await response.json();
@@ -83,6 +91,28 @@ export default function ExplanationPanel({
             ? "👶 बच्चों जैसा समझाएं"
             : "👶 Explain Like I'm 10"}
         </button>
+      </div>
+
+      {/* AI Model Selector */}
+      <div>
+        <label className="text-xs font-medium text-gray-500 mb-1.5 block">
+          {language === "hi" ? "AI मॉडल चुनें" : "Choose AI Model"}
+        </label>
+        <div className="flex gap-2">
+          {AI_MODELS.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setProvider(m.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                provider === m.id
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              {m.icon} {language === "hi" ? m.labelHi : m.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Generate Button */}
