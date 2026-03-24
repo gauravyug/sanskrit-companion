@@ -44,5 +44,17 @@ export async function POST(request: NextRequest) {
     : undefined;
 
   const result = await getAIExplanation(verse, safeMode, safeLang, safeQuestion, safeProvider);
-  return NextResponse.json(result);
+
+  // Debug: indicate which source was used
+  const hasGemini = !!process.env.GEMINI_API_KEY;
+  const hasGroq = !!process.env.GROQ_API_KEY;
+  const hasOpenai = !!process.env.OPENAI_API_KEY;
+
+  return NextResponse.json({
+    ...result,
+    _debug: {
+      providers: { gemini: hasGemini, groq: hasGroq, openai: hasOpenai },
+      preferredProvider: safeProvider ?? "auto",
+    },
+  });
 }
