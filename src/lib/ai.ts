@@ -85,6 +85,7 @@ function getAvailableProvider(preferred?: AIProvider): { provider: ProviderConfi
 }
 
 // ── Prompt builder ────────────────────────────────────────────────────
+function buildPrompt(
   verse: Verse,
   mode: "standard" | "eli10",
   language: Language,
