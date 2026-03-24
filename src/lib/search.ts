@@ -53,16 +53,20 @@ export async function searchVerses(query: string): Promise<Verse[]> {
     const chapter = parseInt(refMatch[1], 10);
     const verse = parseInt(refMatch[2], 10);
     if (isSupabaseConfigured()) {
-      const { data } = await supabase!
-        .from("verses")
-        .select("*, word_meanings(*)")
-        .eq("chapter", chapter)
-        .eq("verse", verse);
-      if (data && data.length > 0) return data.map(rowToVerse);
-    } else {
-      const found = localVerses.filter((v) => v.chapter === chapter && v.verse === verse);
-      if (found.length > 0) return found;
+      try {
+        const { data, error } = await supabase!
+          .from("verses")
+          .select("*, word_meanings(*)")
+          .eq("chapter", chapter)
+          .eq("verse", verse);
+        if (!error && data && data.length > 0) return data.map(rowToVerse);
+        if (error) console.error("Supabase ref search error:", error.message);
+      } catch (e) {
+        console.error("Supabase ref search exception:", e);
+      }
     }
+    const found = localVerses.filter((v) => v.chapter === chapter && v.verse === verse);
+    if (found.length > 0) return found;
   }
 
   // Chapter-only match (e.g. "chapter 2")
@@ -74,11 +78,16 @@ export async function searchVerses(query: string): Promise<Verse[]> {
 
   // Full-text search
   if (isSupabaseConfigured()) {
-    const { data } = await supabase!
-      .from("verses")
-      .select("*, word_meanings(*)")
-      .ilike("search_text", `%${q}%`);
-    return (data ?? []).map(rowToVerse);
+    try {
+      const { data, error } = await supabase!
+        .from("verses")
+        .select("*, word_meanings(*)")
+        .ilike("search_text", `%${q}%`);
+      if (!error && data && data.length > 0) return data.map(rowToVerse);
+      if (error) console.error("Supabase search error:", error.message);
+    } catch (e) {
+      console.error("Supabase search exception:", e);
+    }
   }
 
   return localVerses.filter(
@@ -100,36 +109,39 @@ export async function searchVerses(query: string): Promise<Verse[]> {
 
 export async function getVerseById(id: string): Promise<Verse | undefined> {
   if (isSupabaseConfigured()) {
-    const { data } = await supabase!
+    const { data, error } = await supabase!
       .from("verses")
       .select("*, word_meanings(*)")
       .eq("id", id)
       .single();
-    return data ? rowToVerse(data) : undefined;
+    if (!error && data) return rowToVerse(data);
+    if (error) console.error("Supabase getVerseById error:", error.message);
   }
   return localVerses.find((v) => v.id === id);
 }
 
 export async function getAllVerses(): Promise<Verse[]> {
   if (isSupabaseConfigured()) {
-    const { data } = await supabase!
+    const { data, error } = await supabase!
       .from("verses")
       .select("*, word_meanings(*)")
       .order("chapter")
       .order("verse");
-    return (data ?? []).map(rowToVerse);
+    if (!error && data && data.length > 0) return data.map(rowToVerse);
+    if (error) console.error("Supabase getAllVerses error:", error.message);
   }
   return localVerses;
 }
 
 export async function getVersesByChapter(chapter: number): Promise<Verse[]> {
   if (isSupabaseConfigured()) {
-    const { data } = await supabase!
+    const { data, error } = await supabase!
       .from("verses")
       .select("*, word_meanings(*)")
       .eq("chapter", chapter)
       .order("verse");
-    return (data ?? []).map(rowToVerse);
+    if (!error && data && data.length > 0) return data.map(rowToVerse);
+    if (error) console.error("Supabase getVersesByChapter error:", error.message);
   }
   return localVerses.filter((v) => v.chapter === chapter);
 }

@@ -18,7 +18,7 @@ const providers: Record<AIProvider, ProviderConfig> = {
     getHeaders: () => ({ "Content-Type": "application/json" }),
     buildBody: (prompt: string) => ({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.7, maxOutputTokens: 800 },
+      generationConfig: { temperature: 0.7, maxOutputTokens: 2048 },
     }),
     extractContent: (data) => {
       const candidates = data.candidates as Array<{ content?: { parts?: Array<{ text?: string }> } }> | undefined;
@@ -37,7 +37,7 @@ const providers: Record<AIProvider, ProviderConfig> = {
       model: "llama-3.1-70b-versatile",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
-      max_tokens: 800,
+      max_tokens: 2048,
     }),
     extractContent: (data) => {
       const choices = data.choices as Array<{ message?: { content?: string } }> | undefined;
@@ -56,7 +56,7 @@ const providers: Record<AIProvider, ProviderConfig> = {
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.7,
-      max_tokens: 800,
+      max_tokens: 2048,
     }),
     extractContent: (data) => {
       const choices = data.choices as Array<{ message?: { content?: string } }> | undefined;
@@ -176,17 +176,30 @@ export async function getAIExplanation(
     const data = await response.json();
     const content = provider.extractContent(data);
 
+    // Strip markdown code fences if present
+    const cleaned = content.replace(/```(?:json)?\s*/gi, "").trim();
+
     // Try to parse JSON from the response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
-      const parsed = JSON.parse(jsonMatch[0]);
-      return {
-        explanation: parsed.explanation || content,
-        followUp: parsed.followUp || [],
-      };
+      try {
+        const parsed = JSON.parse(jsonMatch[0]);
+        return {
+          explanation: parsed.explanation || content,
+          followUp: Array.isArray(parsed.followUp) ? parsed.followUp : [],
+        };
+      } catch {
+        // JSON was malformed/truncated — extract explanation field as text
+        const expMatch = cleaned.match(/"explanation"\s*:\s*"((?:[^"\\]|\\.)*)/s);
+        if (expMatch) {
+          return { explanation: expMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"'), followUp: [] };
+        }
+      }
     }
 
-    return { explanation: content, followUp: [] };
+    // Last resort: return cleaned text, stripping any leftover JSON artifacts
+    const plainText = cleaned.replace(/[{}"]/g, "").replace(/explanation\s*:/i, "").trim();
+    return { explanation: plainText || content, followUp: [] };
   } catch (error) {
     console.error("AI explanation error:", error);
     return getFallbackExplanation(verse, mode, language);
