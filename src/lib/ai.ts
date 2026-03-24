@@ -66,7 +66,7 @@ const providers: Record<AIProvider, ProviderConfig> = {
 };
 
 // ── Resolve which provider to use ─────────────────────────────────────
-function getAvailableProvider(preferred?: AIProvider): { provider: ProviderConfig; key: string } | null {
+function getAvailableProvider(preferred?: AIProvider): { provider: ProviderConfig; key: string; id: AIProvider } | null {
   const order: AIProvider[] = preferred
     ? [preferred, "gemini", "groq", "openai"]
     : ["gemini", "groq", "openai"];
@@ -79,7 +79,7 @@ function getAvailableProvider(preferred?: AIProvider): { provider: ProviderConfi
 
   for (const id of order) {
     const key = keyMap[id];
-    if (key) return { provider: providers[id], key };
+    if (key) return { provider: providers[id], key, id };
   }
   return null;
 }
@@ -146,17 +146,20 @@ export async function getAIExplanation(
   const resolved = getAvailableProvider(preferredProvider);
 
   if (!resolved) {
+    console.log("No AI provider configured, using fallback");
     return getFallbackExplanation(verse, mode, language);
   }
 
-  const { provider, key } = resolved;
+  const { provider, key, id } = resolved;
   const prompt = buildPrompt(verse, mode, language, question);
 
   try {
     // Gemini uses API key as query param
-    const url = provider === providers.gemini
+    const url = id === "gemini"
       ? `${provider.apiUrl}?key=${key}`
       : provider.apiUrl;
+
+    console.log(`Using AI provider: ${provider.name}`);
 
     const response = await fetch(url, {
       method: "POST",
@@ -165,7 +168,8 @@ export async function getAIExplanation(
     });
 
     if (!response.ok) {
-      console.error(`${provider.name} API error:`, response.status);
+      const errorText = await response.text();
+      console.error(`${provider.name} API error ${response.status}:`, errorText);
       return getFallbackExplanation(verse, mode, language);
     }
 
