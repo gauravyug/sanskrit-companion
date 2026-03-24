@@ -9,7 +9,7 @@ interface ExplanationPanelProps {
 }
 
 const AI_MODELS: { id: AIProvider; label: string; labelHi: string; icon: string }[] = [
-  { id: "gemini", label: "Gemini Flash", labelHi: "Gemini Flash", icon: "✦" },
+  { id: "gemini", label: "Gemini 2.5 Flash", labelHi: "Gemini 2.5 Flash", icon: "✦" },
   { id: "groq", label: "Llama 3.1 (Groq)", labelHi: "Llama 3.1 (Groq)", icon: "🦙" },
   { id: "openai", label: "GPT-4o Mini", labelHi: "GPT-4o Mini", icon: "🤖" },
 ];

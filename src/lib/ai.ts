@@ -13,8 +13,8 @@ interface ProviderConfig {
 const providers: Record<AIProvider, ProviderConfig> = {
   gemini: {
     name: "Google Gemini",
-    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
-    model: "gemini-2.0-flash",
+    apiUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    model: "gemini-2.5-flash",
     getHeaders: () => ({ "Content-Type": "application/json" }),
     buildBody: (prompt: string) => ({
       contents: [{ parts: [{ text: prompt }] }],
