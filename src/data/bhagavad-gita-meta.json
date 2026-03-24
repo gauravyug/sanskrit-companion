@@ -1,0 +1,152 @@
+{
+  "id": "bhagavad-gita",
+  "name": "Bhagavad Gita",
+  "nameHindi": "श्रीमद्भगवद्गीता",
+  "description": "The Song of God — a 700-verse Hindu scripture that is part of the Mahabharata",
+  "chapters": [
+    {
+      "chapter": 1,
+      "name": "Arjuna Vishada Yoga",
+      "nameHindi": "अर्जुनविषादयोग",
+      "nameMeaning": "The Yoga of Arjuna's Dejection",
+      "verseCount": 47,
+      "summary": "Arjuna sees his relatives and teachers on the battlefield and is overcome with grief and moral dilemma."
+    },
+    {
+      "chapter": 2,
+      "name": "Sankhya Yoga",
+      "nameHindi": "सांख्ययोग",
+      "nameMeaning": "The Yoga of Knowledge",
+      "verseCount": 72,
+      "summary": "Krishna teaches about the immortality of the soul, the nature of duty, and the path of wisdom."
+    },
+    {
+      "chapter": 3,
+      "name": "Karma Yoga",
+      "nameHindi": "कर्मयोग",
+      "nameMeaning": "The Yoga of Action",
+      "verseCount": 43,
+      "summary": "Krishna explains the importance of selfless action and performing one's duty without attachment to results."
+    },
+    {
+      "chapter": 4,
+      "name": "Jnana Karma Sanyasa Yoga",
+      "nameHindi": "ज्ञानकर्मसंन्यासयोग",
+      "nameMeaning": "The Yoga of Knowledge and Renunciation of Action",
+      "verseCount": 42,
+      "summary": "Krishna reveals the divine nature of his incarnations and the importance of knowledge combined with action."
+    },
+    {
+      "chapter": 5,
+      "name": "Karma Sanyasa Yoga",
+      "nameHindi": "कर्मसंन्यासयोग",
+      "nameMeaning": "The Yoga of Renunciation",
+      "verseCount": 29,
+      "summary": "Krishna compares renunciation of action with selfless action, showing both lead to liberation."
+    },
+    {
+      "chapter": 6,
+      "name": "Dhyana Yoga",
+      "nameHindi": "ध्यानयोग",
+      "nameMeaning": "The Yoga of Meditation",
+      "verseCount": 47,
+      "summary": "Krishna teaches the practice of meditation, self-control and the state of inner peace."
+    },
+    {
+      "chapter": 7,
+      "name": "Jnana Vijnana Yoga",
+      "nameHindi": "ज्ञानविज्ञानयोग",
+      "nameMeaning": "The Yoga of Knowledge and Wisdom",
+      "verseCount": 30,
+      "summary": "Krishna reveals his divine nature and explains the difference between material and spiritual knowledge."
+    },
+    {
+      "chapter": 8,
+      "name": "Aksara Brahma Yoga",
+      "nameHindi": "अक्षरब्रह्मयोग",
+      "nameMeaning": "The Yoga of the Imperishable Absolute",
+      "verseCount": 28,
+      "summary": "Krishna explains the nature of the supreme, the process of death, and how to attain the eternal."
+    },
+    {
+      "chapter": 9,
+      "name": "Raja Vidya Raja Guhya Yoga",
+      "nameHindi": "राजविद्याराजगुह्ययोग",
+      "nameMeaning": "The Yoga of Royal Knowledge and Royal Secret",
+      "verseCount": 34,
+      "summary": "Krishna shares the most confidential knowledge about devotion and his relationship with all beings."
+    },
+    {
+      "chapter": 10,
+      "name": "Vibhuti Yoga",
+      "nameHindi": "विभूतियोग",
+      "nameMeaning": "The Yoga of Divine Glories",
+      "verseCount": 42,
+      "summary": "Krishna describes his divine manifestations in the world to inspire devotion."
+    },
+    {
+      "chapter": 11,
+      "name": "Vishwarupa Darshana Yoga",
+      "nameHindi": "विश्वरूपदर्शनयोग",
+      "nameMeaning": "The Yoga of the Vision of the Universal Form",
+      "verseCount": 55,
+      "summary": "Arjuna is granted divine vision to see Krishna's cosmic universal form."
+    },
+    {
+      "chapter": 12,
+      "name": "Bhakti Yoga",
+      "nameHindi": "भक्तियोग",
+      "nameMeaning": "The Yoga of Devotion",
+      "verseCount": 20,
+      "summary": "Krishna describes the path of devotion and qualities of a true devotee."
+    },
+    {
+      "chapter": 13,
+      "name": "Kshetra Kshetragna Vibhaga Yoga",
+      "nameHindi": "क्षेत्रक्षेत्रज्ञविभागयोग",
+      "nameMeaning": "The Yoga of the Field and the Knower",
+      "verseCount": 35,
+      "summary": "Krishna explains the body (field) and the soul (knower of the field) and the difference between them."
+    },
+    {
+      "chapter": 14,
+      "name": "Gunatraya Vibhaga Yoga",
+      "nameHindi": "गुणत्रयविभागयोग",
+      "nameMeaning": "The Yoga of the Three Gunas",
+      "verseCount": 27,
+      "summary": "Krishna describes the three qualities of nature — sattva, rajas, and tamas — and how they bind the soul."
+    },
+    {
+      "chapter": 15,
+      "name": "Purushottama Yoga",
+      "nameHindi": "पुरुषोत्तमयोग",
+      "nameMeaning": "The Yoga of the Supreme Person",
+      "verseCount": 20,
+      "summary": "Krishna describes the eternal tree of existence and reveals himself as the Supreme Person."
+    },
+    {
+      "chapter": 16,
+      "name": "Daivasura Sampad Vibhaga Yoga",
+      "nameHindi": "दैवासुरसम्पद्विभागयोग",
+      "nameMeaning": "The Yoga of Divine and Demonic Qualities",
+      "verseCount": 24,
+      "summary": "Krishna describes divine and demonic qualities and encourages cultivating the divine nature."
+    },
+    {
+      "chapter": 17,
+      "name": "Shraddhatraya Vibhaga Yoga",
+      "nameHindi": "श्रद्धात्रयविभागयोग",
+      "nameMeaning": "The Yoga of the Three Divisions of Faith",
+      "verseCount": 28,
+      "summary": "Krishna explains the three types of faith, food, sacrifice, austerity, and charity."
+    },
+    {
+      "chapter": 18,
+      "name": "Moksha Sanyasa Yoga",
+      "nameHindi": "मोक्षसंन्यासयोग",
+      "nameMeaning": "The Yoga of Liberation through Renunciation",
+      "verseCount": 78,
+      "summary": "The final teaching — Krishna summarizes all paths and urges Arjuna to surrender to the divine will."
+    }
+  ]
+}
