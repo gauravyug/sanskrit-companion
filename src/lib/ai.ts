@@ -190,7 +190,7 @@ export async function getAIExplanation(
         };
       } catch {
         // JSON was malformed/truncated — extract explanation field as text
-        const expMatch = cleaned.match(/"explanation"\s*:\s*"((?:[^"\\]|\\.)*)/s);
+        const expMatch = cleaned.match(/"explanation"\s*:\s*"((?:[^"\\]|\\[\s\S])*)/);
         if (expMatch) {
           return { explanation: expMatch[1].replace(/\\n/g, "\n").replace(/\\"/g, '"'), followUp: [] };
         }
